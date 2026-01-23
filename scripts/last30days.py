@@ -29,6 +29,7 @@ from lib import (
     dates,
     dedupe,
     env,
+    http,
     models,
     normalize,
     openai_reddit,
@@ -62,25 +63,38 @@ def run_research(
     """Run the research pipeline.
 
     Returns:
-        Tuple of (reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched)
+        Tuple of (reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error)
     """
     reddit_items = []
     x_items = []
     raw_openai = None
     raw_xai = None
     raw_reddit_enriched = []
+    reddit_error = None
+    x_error = None
 
     # Reddit search via OpenAI
     if sources in ("both", "reddit"):
         if mock:
             raw_openai = load_fixture("openai_sample.json")
         else:
-            raw_openai = openai_reddit.search_reddit(
-                config["OPENAI_API_KEY"],
-                selected_models["openai"],
-                topic,
-                depth=depth,
-            )
+            try:
+                raw_openai = openai_reddit.search_reddit(
+                    config["OPENAI_API_KEY"],
+                    selected_models["openai"],
+                    topic,
+                    depth=depth,
+                )
+            except http.HTTPError as e:
+                print(f"[REDDIT ERROR] OpenAI API request failed: {e}", flush=True)
+                if e.body:
+                    print(f"[REDDIT ERROR] Response body: {e.body[:500]}", flush=True)
+                raw_openai = {"error": str(e)}
+                reddit_error = f"API error: {e}"
+            except Exception as e:
+                print(f"[REDDIT ERROR] Unexpected error: {type(e).__name__}: {e}", flush=True)
+                raw_openai = {"error": str(e)}
+                reddit_error = f"{type(e).__name__}: {e}"
 
         # Parse response
         reddit_items = openai_reddit.parse_reddit_response(raw_openai)
@@ -112,7 +126,7 @@ def run_research(
         # Parse response
         x_items = xai_x.parse_x_response(raw_xai)
 
-    return reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched
+    return reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error
 
 
 def main():
@@ -227,7 +241,7 @@ def main():
         mode = "x-only"
 
     # Run research
-    reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched = run_research(
+    reddit_items, x_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error = run_research(
         args.topic,
         sources,
         config,
@@ -265,6 +279,8 @@ def main():
     )
     report.reddit = deduped_reddit
     report.x = deduped_x
+    report.reddit_error = reddit_error
+    report.x_error = x_error
 
     # Generate context snippet
     report.context_snippet_md = render.render_context_snippet(report)

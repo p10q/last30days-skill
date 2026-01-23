@@ -153,9 +153,12 @@ class Report:
     best_practices: List[str] = field(default_factory=list)
     prompt_pack: List[str] = field(default_factory=list)
     context_snippet_md: str = ""
+    # Status tracking
+    reddit_error: Optional[str] = None
+    x_error: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        d = {
             'topic': self.topic,
             'range': {
                 'from': self.range_from,
@@ -171,6 +174,11 @@ class Report:
             'prompt_pack': self.prompt_pack,
             'context_snippet_md': self.context_snippet_md,
         }
+        if self.reddit_error:
+            d['reddit_error'] = self.reddit_error
+        if self.x_error:
+            d['x_error'] = self.x_error
+        return d
 
 
 def create_report(

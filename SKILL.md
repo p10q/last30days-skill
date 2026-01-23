@@ -108,20 +108,15 @@ Read the research output and become an **expert**. Identify:
 
 ## THEN: Show Summary + Invite Vision
 
-Display in this EXACT order (so stats are visible at bottom of terminal):
+**CRITICAL ORDER**: Display sections in this EXACT sequence (insights FIRST, stats LAST):
 
 ```
-**Key patterns discovered:**
-1. [Pattern 1] - [one-line insight]
-2. [Pattern 2] - [one-line insight]
-3. [Pattern 3] - [one-line insight]
-4. [Pattern 4] - [one-line insight]
-5. [Pattern 5] - [one-line insight]
+---
+What I learned:
 
-I'm now an expert in {TOPIC}.
+[2-4 sentences synthesizing the key insight from your research. What's the secret? What pattern emerged? What do experts do differently? Write this as a mini-expert briefing, not a list.]
 
 ---
-
 📊 Research Complete
 
 Analyzed {total_sources} sources from the last 30 days
@@ -129,6 +124,7 @@ Analyzed {total_sources} sources from the last 30 days
 ├─ X: {n} posts │ {sum} likes │ {sum} reposts
 └─ Top voices: r/{sub1}, r/{sub2}, @{handle1}, @{handle2}
 
+---
 Share your vision for what you want to create and I'll write a thoughtful prompt you can copy-paste directly into {TARGET_TOOL}.
 ```
 
