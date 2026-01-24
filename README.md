@@ -1,10 +1,10 @@
 # /last30days
 
-A Claude Code skill that researches any topic across Reddit and X from the last 30 days, synthesizes the insights, and delivers expert-level answers.
+**The AI world reinvents itself every month. This Claude Code skill keeps you current.** /last30days researches your topic across Reddit, X, and the web from the last 30 days, finds what the community is actually upvoting and sharing, and writes you a prompt that works today, not six months ago. Whether it's Ralph Wiggum loops, Suno music prompts, or the latest Midjourney techniques, you'll prompt like someone who's been paying attention.
 
-**Best for prompt research** — discover what prompting techniques actually work for any tool (ChatGPT, Midjourney, Claude, Figma AI, etc.) by learning from real community discussions and best practices.
+**Best for prompt research**: discover what prompting techniques actually work for any tool (ChatGPT, Midjourney, Claude, Figma AI, etc.) by learning from real community discussions and best practices.
 
-**But also great for anything trending** — music, culture, news, product recommendations, viral trends, or any question where "what are people saying right now?" matters.
+**But also great for anything trending**: music, culture, news, product recommendations, viral trends, or any question where "what are people saying right now?" matters.
 
 ## Installation
 
@@ -41,11 +41,11 @@ Examples:
 3. **Delivers** - Either writes copy-paste-ready prompts for your target tool, or gives you a curated expert-level answer
 
 ### Use it for:
-- **Prompt research** — "What prompting techniques work for legal questions in ChatGPT?"
-- **Tool best practices** — "How are people using Remotion with Claude Code?"
-- **Trend discovery** — "What are the best rap songs right now?"
-- **Product research** — "What do people think of the new M4 MacBook?"
-- **Viral content** — "What's the dog-as-human trend on ChatGPT?"
+- **Prompt research** - "What prompting techniques work for legal questions in ChatGPT?"
+- **Tool best practices** - "How are people using Remotion with Claude Code?"
+- **Trend discovery** - "What are the best rap songs right now?"
+- **Product research** - "What do people think of the new M4 MacBook?"
+- **Viral content** - "What's the dog-as-human trend on ChatGPT?"
 
 ---
 
@@ -152,7 +152,7 @@ This example shows how /last30days discovers **viral trends you didn't know exis
 **Query:** `/last30days research best practices for beautiful remotion animation videos in claude code`
 
 **Research Output:**
-> The Remotion + Claude Code combination has emerged as a powerful workflow. Users consistently report that simple, clear prompts with scene-by-scene descriptions yield the best results. Key insights: iteration is essential—most "beautiful" videos come from back-and-forth refinement rather than one-shot prompts.
+> The Remotion + Claude Code combination has emerged as a powerful workflow. Users consistently report that simple, clear prompts with scene-by-scene descriptions yield the best results. Key insights: iteration is essential, most "beautiful" videos come from back-and-forth refinement rather than one-shot prompts.
 
 **Then asked:** "Can you make a prompt for a 50 second launch video for my /last30days skill?"
 
