@@ -96,10 +96,11 @@ echo "Please edit it to add your API keys, then run the skill again."
 ```
 🔍 Researching "{TOPIC}" across the last 30 days...
 
-🚀 Deploying research agents...
-├─ 🟠 Reddit Agent: Scanning subreddits for discussions...
-├─ 🔵 X Agent: Following the conversation on X...
-└─ 🌐 Web Agent: Searching blogs, docs, and news...
+🚀 Deploying research agents in parallel...
+├─ 🟠 Reddit Agent: Scanning subreddits for gold...
+├─ 🔵 X Agent: Catching the latest takes...
+├─ 🌐 Web Agent: Crawling blogs, docs & news...
+└─ ⚖️ Judge Agent: Standing by to synthesize...
 ```
 
 **Step 2: Start Reddit/X script in background**
@@ -152,20 +153,20 @@ Use TaskOutput to get the script results before proceeding to synthesis.
 
 **After all searches complete, display:**
 ```
-✅ Research complete
-├─ Reddit: Found {n} threads
-├─ X: Found {n} posts
-└─ Web: Found {n} pages
+✅ All agents reported back!
+├─ 🟠 Reddit: {n} threads collected
+├─ 🔵 X: {n} posts captured
+└─ 🌐 Web: {n} pages found
 
-⚖️ Synthesizing insights...
+⚖️ Judge Agent: Weighing the evidence...
 ```
 
 **The Judge Agent must:**
-1. Weight Reddit/X sources HIGHER (they have engagement signals: upvotes, likes)
-2. Weight WebSearch sources LOWER (no engagement data)
-3. Identify patterns that appear across ALL three sources (strongest signals)
-4. Note any contradictions between sources
-5. Extract the top 3-5 actionable insights
+1. 🏆 Weight Reddit/X sources HIGHER (they have engagement signals: upvotes, likes)
+2. 📉 Weight WebSearch sources LOWER (no engagement data)
+3. 🔗 Identify patterns that appear across ALL three sources (strongest signals)
+4. ⚠️ Note any contradictions between sources
+5. 💡 Extract the top 3-5 actionable insights
 
 ---
 
