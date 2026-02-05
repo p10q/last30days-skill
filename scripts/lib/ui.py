@@ -92,6 +92,9 @@ PROMO_MESSAGE = f"""
   {Colors.CYAN}🔵 X (Twitter){Colors.RESET} - Real-time posts, likes, reposts from creators
      └─ Add XAI_API_KEY (uses xAI's live X search)
 
+  {Colors.GREEN}🌐 Web (Brave Search){Colors.RESET} - Blogs, docs, news (with --include-web)
+     └─ Add BRAVE_API_KEY for automatic web results
+
 {Colors.DIM}Setup:{Colors.RESET} Edit {Colors.BOLD}~/.config/last30days/.env{Colors.RESET}
 {Colors.YELLOW}{Colors.BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}
 """
@@ -107,6 +110,9 @@ Right now you're using web search only. Add API keys to unlock:
 
   🔵 X (Twitter) - Real-time posts, likes, reposts from creators
      └─ Add XAI_API_KEY (uses xAI's live X search)
+
+  🌐 Web (Brave Search) - Blogs, docs, news (with --include-web)
+     └─ Add BRAVE_API_KEY for automatic web results
 
 Setup: Edit ~/.config/last30days/.env
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -246,15 +252,18 @@ class ProgressDisplay:
         if self.spinner:
             self.spinner.stop()
 
-    def show_complete(self, reddit_count: int, x_count: int):
+    def show_complete(self, reddit_count: int, x_count: int, web_count: int = 0):
         elapsed = time.time() - self.start_time
         if IS_TTY:
             sys.stderr.write(f"\n{Colors.GREEN}{Colors.BOLD}✓ Research complete{Colors.RESET} ")
             sys.stderr.write(f"{Colors.DIM}({elapsed:.1f}s){Colors.RESET}\n")
-            sys.stderr.write(f"  {Colors.YELLOW}Reddit:{Colors.RESET} {reddit_count} threads  ")
-            sys.stderr.write(f"{Colors.CYAN}X:{Colors.RESET} {x_count} posts\n\n")
+            parts = [f"{Colors.YELLOW}Reddit:{Colors.RESET} {reddit_count} threads", f"{Colors.CYAN}X:{Colors.RESET} {x_count} posts"]
+            if web_count is not None and web_count > 0:
+                parts.append(f"{Colors.GREEN}Web:{Colors.RESET} {web_count} results")
+            sys.stderr.write(f"  {'  '.join(parts)}\n\n")
         else:
-            sys.stderr.write(f"✓ Research complete ({elapsed:.1f}s) - Reddit: {reddit_count} threads, X: {x_count} posts\n")
+            extra = f", Web: {web_count} results" if (web_count is not None and web_count > 0) else ""
+            sys.stderr.write(f"✓ Research complete ({elapsed:.1f}s) - Reddit: {reddit_count} threads, X: {x_count} posts{extra}\n")
         sys.stderr.flush()
 
     def show_cached(self, age_hours: float = None):

@@ -703,14 +703,16 @@ This example shows /last30days discovering **emerging developer workflows** - re
 
 - **OpenAI API key** - For Reddit research (uses web search)
 - **xAI API key** - For X research (optional but recommended)
+- **Brave API key** - For automatic web search (blogs, docs, news). Optional; add `BRAVE_API_KEY` to `~/.config/last30days/.env`. Without it, web results use Claude's built-in search when `--include-web` or web-only mode is used.
 
-At least one key is required.
+At least one key is required (or web-only mode with Brave key).
 
 ## How It Works
 
 The skill uses:
 - OpenAI's Responses API with web search to find Reddit discussions
 - xAI's API with live X search to find posts
+- Brave Search API for web results (when `BRAVE_API_KEY` is set)
 - Real Reddit thread enrichment for engagement metrics
 - Scoring algorithm that weighs recency, relevance, and engagement
 

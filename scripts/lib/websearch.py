@@ -1,21 +1,93 @@
 """WebSearch module for last30days skill.
 
-NOTE: WebSearch uses Claude's built-in WebSearch tool, which runs INSIDE Claude Code.
-Unlike Reddit/X which use external APIs, WebSearch results are obtained by Claude
-directly and passed to this module for normalization and scoring.
+When BRAVE_API_KEY is set, web search uses the Brave Search API. Otherwise,
+Claude's built-in WebSearch tool can be used (script prints instructions).
 
-The typical flow is:
-1. Claude invokes WebSearch tool with the topic
-2. Claude passes results to parse_websearch_results()
+Flow with Brave:
+1. search_brave() calls Brave Search API with the topic
+2. Results are passed to parse_websearch_results()
 3. Results are normalized into WebSearchItem objects
 """
 
 import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urlencode
 
+from . import http
 from . import schema
+
+BRAVE_WEB_SEARCH_URL = "https://api.search.brave.com/res/v1/web/search"
+
+
+def search_brave(
+    api_key: str,
+    query: str,
+    from_date: str = "",
+    to_date: str = "",
+    count: int = 15,
+) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+    """Run a web search via Brave Search API.
+
+    Args:
+        api_key: Brave API key (X-Subscription-Token).
+        query: Search query string.
+        from_date: Start date YYYY-MM-DD (unused; Brave uses freshness param).
+        to_date: End date YYYY-MM-DD (unused).
+        count: Max results to return (max 20).
+
+    Returns:
+        Tuple of (list of result dicts with title, url, snippet, error_message).
+        Each dict is in the format expected by parse_websearch_results().
+        On success error_message is None; on failure results are [] and error_message is set.
+    """
+    if not api_key or not query.strip():
+        return [], "Missing API key or query"
+
+    count = min(max(1, count), 20)
+    params = {
+        "q": query.strip(),
+        "count": count,
+        "freshness": "pm",  # past month (aligns with last 30 days)
+    }
+    url = f"{BRAVE_WEB_SEARCH_URL}?{urlencode(params)}"
+    headers = {
+        "Accept": "application/json",
+        "X-Subscription-Token": api_key,
+    }
+
+    try:
+        data = http.get(url, headers=headers, timeout=15)
+    except http.HTTPError as e:
+        body = getattr(e, "body", None) or str(e)
+        return [], f"Brave API error: {e} ({body})"
+    except Exception as e:
+        return [], f"Brave search failed: {type(e).__name__}: {e}"
+
+    if not isinstance(data, dict):
+        return [], "Brave API returned invalid response"
+
+    web = data.get("web") or {}
+    results = web.get("results") if isinstance(web, dict) else []
+    if not isinstance(results, list):
+        return [], "Brave API returned invalid results"
+
+    out = []
+    for r in results:
+        if not isinstance(r, dict):
+            continue
+        url_val = r.get("url", "").strip()
+        if not url_val:
+            continue
+        title = str(r.get("title", "")).strip()
+        desc = str(r.get("description", "")).strip()
+        out.append({
+            "title": title,
+            "url": url_val,
+            "snippet": desc,
+            "description": desc,
+        })
+    return out, None
 
 
 # Month name mappings for date parsing

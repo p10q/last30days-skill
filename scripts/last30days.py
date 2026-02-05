@@ -422,6 +422,28 @@ def main():
         progress,
     )
 
+    # Web search via Brave when requested and API key is set
+    report_web = []
+    web_error = None
+    if web_needed and config.get("BRAVE_API_KEY"):
+        raw_web, web_err = websearch.search_brave(
+            config["BRAVE_API_KEY"],
+            args.topic,
+            from_date,
+            to_date,
+            count=15,
+        )
+        if web_err:
+            web_error = web_err
+            if progress:
+                progress.show_error(web_error)
+        else:
+            parsed = websearch.parse_websearch_results(raw_web, args.topic, from_date, to_date)
+            web_items = websearch.normalize_websearch_items(parsed, from_date, to_date)
+            scored_web = score.score_websearch_items(web_items)
+            report_web = websearch.dedupe_websearch(scored_web)
+        web_needed = False
+
     # Processing phase
     progress.start_processing()
 
@@ -459,8 +481,10 @@ def main():
     )
     report.reddit = deduped_reddit
     report.x = deduped_x
+    report.web = report_web
     report.reddit_error = reddit_error
     report.x_error = x_error
+    report.web_error = web_error
 
     # Generate context snippet
     report.context_snippet_md = render.render_context_snippet(report)
@@ -470,9 +494,12 @@ def main():
 
     # Show completion
     if sources == "web":
-        progress.show_web_only_complete()
+        if config.get("BRAVE_API_KEY"):
+            progress.show_complete(0, 0, len(report_web))
+        else:
+            progress.show_web_only_complete()
     else:
-        progress.show_complete(len(deduped_reddit), len(deduped_x))
+        progress.show_complete(len(deduped_reddit), len(deduped_x), len(report_web))
 
     # Output result
     output_result(report, args.emit, web_needed, args.topic, from_date, to_date, missing_keys)
@@ -499,7 +526,7 @@ def output_result(
     elif emit_mode == "path":
         print(render.get_context_path())
 
-    # Output WebSearch instructions if needed
+    # Output WebSearch instructions if needed (no BRAVE_API_KEY = Claude uses its tool)
     if web_needed:
         print("\n" + "="*60)
         print("### WEBSEARCH REQUIRED ###")
@@ -514,6 +541,9 @@ def output_result(
         print("After searching, synthesize WebSearch results WITH the Reddit/X")
         print("results above. WebSearch items should rank LOWER than comparable")
         print("Reddit/X items (they lack engagement metrics).")
+        print("")
+        print("Tip: Add BRAVE_API_KEY to ~/.config/last30days/.env to use Brave")
+        print("Search instead (results will be included automatically).")
         print("="*60)
 
 

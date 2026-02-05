@@ -73,6 +73,9 @@ OPENAI_API_KEY=
 
 # For X/Twitter research (uses xAI's x_search tool)
 XAI_API_KEY=
+
+# For automatic web search (Brave Search; used with --include-web or web-only)
+BRAVE_API_KEY=
 ENVEOF
 
 chmod 600 ~/.config/last30days/.env
