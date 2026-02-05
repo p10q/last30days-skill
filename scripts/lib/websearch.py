@@ -12,7 +12,7 @@ Flow with Brave:
 import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 from . import http
 from . import schema
@@ -57,10 +57,15 @@ def search_brave(
     }
 
     try:
-        data = http.get(url, headers=headers, timeout=15)
+        data = http.get(url, headers=headers, timeout=25)
     except http.HTTPError as e:
         body = getattr(e, "body", None) or str(e)
+        code = getattr(e, "status_code", None)
+        if code in (401, 403):
+            return [], f"Brave API auth failed ({code}). Check BRAVE_API_KEY in ~/.config/last30days/.env"
         return [], f"Brave API error: {e} ({body})"
+    except (TimeoutError, OSError) as e:
+        return [], f"Brave search timeout/connection: {e}. Try again or check network."
     except Exception as e:
         return [], f"Brave search failed: {type(e).__name__}: {e}"
 
